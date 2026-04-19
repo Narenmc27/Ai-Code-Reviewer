@@ -52,7 +52,9 @@ with tab2:
         if topic:
             with st.spinner("Generating..."):
                 cards = generate_flashcards(topic)
-            st.markdown("## 🃏 Flashcards:")
-            st.markdown(cards)
-        else:
-            st.warning("Please enter a topic first!")
+st.markdown("## 🃏 Flashcards:")
+
+# Split and display each card separately
+for card in cards.split("---"):
+    if card.strip():
+        st.info(card.strip())
