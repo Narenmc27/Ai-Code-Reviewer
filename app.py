@@ -72,7 +72,7 @@ with tab2:
 for card in cards.split("---"):
     if card.strip():
         st.info(card.strip())
-
+        
 with tab3:
     st.header("📄 Document Q&A")
     document = st.text_area("Paste your document here", height=200)
