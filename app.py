@@ -3,7 +3,7 @@ from groq import Groq
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-
+import PyPDF2
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 llm = ChatGroq(api_key=st.secrets["GROQ_API_KEY"], model="llama-3.3-70b-versatile")
 
@@ -67,13 +67,21 @@ with tab2:
 
 with tab3:
     st.header("Document Q&A")
-    document = st.text_area("Paste your document here", height=200)
-    question = st.text_input("Ask a question about the document")
-    if st.button("Ask"):
-        if document and question:
-            with st.spinner("Searching..."):
-                answer = ask_document(question, document)
-            st.markdown("### Answer:")
-            st.info(answer)
-        else:
-            st.warning("Please paste a document and ask a question!")
+    uploaded_file = st.file_uploader("Upload PDF", type="pdf")
+    
+    if uploaded_file:              # only read if file uploaded!
+        reader = PyPDF2.PdfReader(uploaded_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        st.success("PDF loaded!")
+        
+        question = st.text_input("Ask a question about the document")
+        if st.button("Ask"):
+            if question:
+                with st.spinner("Searching..."):
+                    answer = ask_document(question, text)  # use text!
+                st.markdown("### Answer:")
+                st.info(answer)
+            else:
+                st.warning("Please ask a question!")
