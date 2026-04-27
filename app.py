@@ -28,10 +28,24 @@ def generate_flashcards(topic):
     chain = prompt | llm | StrOutputParser()
     return chain.invoke({"topic": topic})
 
+def ask_document(question, document):
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": f"""Answer ONLY from this document.
+                If not found say 'Not found in document.'
+                DOCUMENT: {document}"""
+            },
+            {"role": "user", "content": question}
+        ]
+    )
+    return response.choices[0].message.content
 # UI
 st.title("🤖 AI Learning Tools")
 
-tab1, tab2 = st.tabs(["Code Reviewer", "Flashcard Generator"])
+tab1, tab2, tab3 = st.tabs(["Code Reviewer", "Flashcard Generator", "Document Q&A"])
 
 with tab1:
     st.header("🔍 Code Reviewer")
@@ -52,9 +66,22 @@ with tab2:
         if topic:
             with st.spinner("Generating..."):
                 cards = generate_flashcards(topic)
-st.markdown("## 🃏 Flashcards:")
+                st.markdown("## 🃏 Flashcards:")
 
 # Split and display each card separately
 for card in cards.split("---"):
     if card.strip():
         st.info(card.strip())
+
+with tab3:
+    st.header("📄 Document Q&A")
+    document = st.text_area("Paste your document here", height=200)
+    question = st.text_input("Ask a question about the document")
+    if st.button("Ask"):
+        if document and question:
+            with st.spinner("Searching..."):
+                answer = ask_document(question, document)
+            st.markdown("### Answer:")
+            st.info(answer)
+        else:
+            st.warning("Please paste a document and ask a question!")
