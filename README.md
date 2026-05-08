@@ -40,3 +40,8 @@ streamlit run app.py
 
 ## 🔑 Environment Variables
 GROQ_API_KEY=your-groq-api-key
+
+## 👨‍💻 Author
+Narendra Kumar P
+[LinkedIn](https://linkedin.com/in/narendrakumarp-517a52236) | 
+[GitHub](https://github.com/Narenmc27)
